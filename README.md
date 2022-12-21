@@ -14,13 +14,13 @@ Após clonar o repositório com:
 
 Suba o servidor central em uma das rasps e logo depois o servidor distribuído em outra:
 
-Subindo o central:
+Subindo o servidor central:
 
         $ cd ServidorCentral/src
         $ make
         $ make run
 
-Subindo o servidor:
+Subindo o servidor distribuido:
 
         $ cd ServidorDistribuido/src
         $ make
