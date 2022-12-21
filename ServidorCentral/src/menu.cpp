@@ -22,7 +22,7 @@ int handle_keypress(char c, uint8_t* state);
 
 using json = nlohmann::json;
 
-class SensorWindow 
+class SensorWindow
 {
 private:
     int state;
@@ -77,18 +77,18 @@ void MenuWindow::refreshAll(uint8_t* states){
     start_color();
     init_pair(1, COLOR_RED, COLOR_RED);
     init_pair(2, COLOR_GREEN, COLOR_GREEN);
-    light1->refreshIt(states[1]);
-    light2->refreshIt(states[2]);
-    air->refreshIt(states[3]);
-    projector->refreshIt(states[4]);
-    alarmBuzz->refreshIt(states[5]);
-    sPresence->refreshIt(states[6]);
-    sSmoke->refreshIt(states[7]);
-    sWindow->refreshIt(states[8]);
-    sDoor->refreshIt(states[9]);
-    sCountIn->refreshIt(states[10]);
-    sCountOut->refreshIt(states[11]);
-    sTempHumid->refreshIt(states[12]);
+    light1->refreshIt(states[0]);
+    light2->refreshIt(states[1]);
+    air->refreshIt(states[2]);
+    projector->refreshIt(states[3]);
+    alarmBuzz->refreshIt(states[4]);
+    sPresence->refreshIt(states[5]);
+    sSmoke->refreshIt(states[6]);
+    sWindow->refreshIt(states[7]);
+    sDoor->refreshIt(states[8]);
+    sCountIn->refreshIt(states[9]);
+    sCountOut->refreshIt(states[10]);
+    sTempHumid->refreshIt(states[11]);
 }
 
 void MenuWindow::d(){
@@ -114,19 +114,17 @@ SensorWindow::SensorWindow(json sensor, std::pair<int,int> pyx){
     SensorWindow::yx = pyx;
     SensorWindow::win = newwin(3, 50, yx.first, yx.second);
     refresh();
-    box(win, 0, 0);
     mvwprintw(win, 1, 1, "%s: ", tag.data());
     wrefresh(win);
 }
 
 void SensorWindow::refreshIt(int state){
     SensorWindow::state = state;
-    box(win, 0, 0);
     wattron(win, COLOR_PAIR((state? 2 : 1)));
     if(type == "dth22"){
         mvwprintw(win, 1, tag.size()+3, "%d", state);
     }else{
-        mvwprintw(win, 1, tag.size()+3, " ");
+        mvwprintw(win, 1, tag.size()+3, (state? "On " : "Off"));
     }
     wattroff(win, COLOR_PAIR((state? 2 : 1)));
 
@@ -137,22 +135,28 @@ int handle_keypress(char c, uint8_t* state){
     switch (c)
     {
     case '1':
-        state[1] = (state[1]? 0 : 1); 
+        state[1] = (state[1]? 0 : 1);
         break;
+
     case '2':
-        state[2] = (state[2]? 0 : 1); 
+        state[2] = (state[2]? 0 : 1);
         break;
+
     case '3':
-        state[3] = (state[3]? 0 : 1); 
+        state[3] = (state[3]? 0 : 1);
         break;
+
     case '4':
-        state[4] = (state[4]? 0 : 1); 
+        state[4] = (state[4]? 0 : 1);
         break;
+
     case '5':
-        state[5] = (state[5]? 0 : 1); 
+        state[5] = (state[5]? 0 : 1);
         break;
+
     case '0':
         return 1;
+        
     default:
         break;
     }
@@ -162,7 +166,7 @@ int handle_keypress(char c, uint8_t* state){
 void* menu(void *arg){
     initscr();
 
-    std::ifstream f("configuracao_sala_01.json");
+    std::ifstream f("sala_01.json");
     json data = json::parse(f);
     char c = 0;
     uint8_t* response = (uint8_t*)arg;
@@ -170,8 +174,7 @@ void* menu(void *arg){
     move(18, 0);
     WINDOW* commWin = newwin(3, 100, 18, 0);
     refresh();
-    box(commWin, 0, 0);
-    mvwprintw(commWin, 1, 1, "COMANDOS        |  1 = L_01 | 2 = L_02 | 3 = AR | 4 = Proj | 5 = Alrm | 0 = exit |");
+    mvwprintw(commWin, 1, 1, "Digite uma opção (de 1 a 5) caso queira alterar os estados.");
     wrefresh(commWin);
     while(1){
         refresh();
@@ -181,7 +184,7 @@ void* menu(void *arg){
             break;
         }
         main_menu.refreshAll(response);
-    }    
+    }
     endwin();
 
     main_menu.d();
@@ -193,13 +196,13 @@ uint8_t* varCompartilhada;
 int main(int argc, char **argv)
 {
     pthread_t menu_tid;
-    pthread_t server_tid; 
+    pthread_t server_tid;
     varCompartilhada = new uint8_t[14];
 
     int r = pthread_create(&menu_tid, NULL, menu, varCompartilhada);
     /* int r2 = pthread_create(&server_tid, NULL, criaServidor, varCompartilhada); */
-    if(!pthread_join(menu_tid, NULL))
-        kill(r2, SIGKILL);
+    if(!pthread_join(menu_tid, NULL));
+       // kill(r2, SIGKILL);
     /* pthread_join(server_tid, NULL); */
 
     return 0;

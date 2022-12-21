@@ -1,113 +1,83 @@
 #include <gpio.h>
 
-#define DEV
-
-Gpio::Gpio(json data){
-    light1 = new Pin(data["outputs"][0], 0);
-    light2 = new Pin(data["outputs"][1], 0);
-    air = new Pin(data["outputs"][2], 0);
-    projector = new Pin(data["outputs"][3], 0);
-    alarmBuzz = new Pin(data["outputs"][4], 0);
-    sPresence = new Pin(data["inputs"][0], 1);
-    sSmoke = new Pin(data["inputs"][1], 1);
-    sWindow = new Pin(data["inputs"][2], 1);
-    sDoor = new Pin(data["inputs"][3], 1);
-    sCountIn = new Pin(data["inputs"][4], 1);
-    sCountOut = new Pin(data["inputs"][5], 1);
-    sTempHumid = new Pin(data["sensor_temperatura"][0], 0);// 1-Wire
-}
-
-void Gpio::refreshAll(uint8_t* states){
-    handle_smoke(states);
-    light1->refreshState(&states[1]);
-    light2->refreshState(&states[2]);
-    air->refreshState(&states[3]);
-    projector->refreshState(&states[4]);
-    alarmBuzz->refreshState(&states[5]);
-    sPresence->refreshState(&states[6]);
-    sSmoke->refreshState(&states[7]);
-    sWindow->refreshState(&states[8]);
-    sDoor->refreshState(&states[9]);
-    sCountIn->refreshState(&states[10]);
-    sCountOut->refreshState(&states[11]);
-    sTempHumid->refreshState(&states[12]);
-}
-
-void Gpio::handle_smoke(uint8_t * states){
-    if(states[7]){
-        states[5] = states[7];
-    }
-}
-
-Pin::Pin(json jgpio, uint8_t isIn){
+Gpio::Gpio(int gpioo, uint8_t entrad){
     // isIn value 1 to input, value 0 to output
-    gpioPin = jgpio["gpio"];
-    type = jgpio["type"];
-    tag = jgpio["tag"];
-    isInput = isIn;
-#ifndef DEV
-    bcm2835_gpio_fsel(gpioPin, (isInput? BCM2835_GPIO_FSEL_INPT : BCM2835_GPIO_FSEL_OUTP));
-    if(isInput){
+    gpioPin = (uint8_t)gpioo;
+    entrada = entrad;
+    bcm2835_gpio_fsel(gpioPin, (entrada? BCM2835_GPIO_FSEL_INPT : BCM2835_GPIO_FSEL_OUTP));
+    if(entrada){
         state = bcm2835_gpio_lev(gpioPin);
     }else{
         state = 0x0;
     }
-#else
-    state = 0x1;
-    showState();     
-#endif
 }
 
-void Pin::changeState(){
+void Gpio::c_state(){
     if(isInput) return;
     state = !state;
-#ifndef DEV
     bcm2835_gpio_write(gpioPin, (uint8_t)state); 
-#endif
 }
 
-void Pin::refreshState(uint8_t* stat){
+void Gpio::r_state(uint8_t* entrada){
     if(!isInput){
+        if(type == "alarme"){
+            if(stat[2]){
+                *stat = stat[2];
+            }
+        }
         if(*stat != state){
-            changeState();
+            c_state();
         }
     }else{
-#ifndef DEV
         state = bcm2835_gpio_lev(gpioPin);
-#endif
     } 
 
     *stat = state;
 }
 
-void Pin::showState(){
-    printf("Sensor %s: %d\n", tag.data(), state);
-}
-
-uint8_t Pin::getGpioPin(){
+uint8_t Gpio::get_gpio(){
     return gpioPin;
 }
 
-uint8_t Pin::getState(){
+uint8_t Gpio::get_state(){
     return state;
 }
 
 void *gpio_handler(void* args){
-    std::ifstream f("configuracao_sala_02.json");
+    std::ifstream f("sala_02.json");
     json data = json::parse(f);
     
-    Gpio main_gpio(data);
+    Gpio luz_1(data["outputs"][0]["gpio"], 0);
+    Gpio luz_2(data["outputs"][1]["gpio"], 0);
+    Gpio ar(data["outputs"][2]["gpio"], 0);
+    Gpio projetor(data["outputs"][3]["gpio"], 0);
+    Gpio alarme(data["outputs"][4]["gpio"], 0);
+    Gpio s_presenca(data["inputs"][0]["gpio"], 1);
+    Gpio s_fumaca(data["inputs"][1]["gpio"], 1);
+    Gpio s_janela(data["inputs"][2]["gpio"], 1);
+    Gpio s_porta(data["inputs"][3]["gpio"], 1);
+    Gpio s_c_In(data["inputs"][4]["gpio"], 1);
+    Gpio s_c_Out(data["inputs"][5]["gpio"], 1);
+    Gpio s_temperatura(data["sensor_temperatura"][0]["gpio"], 1);
+    Gpio s_umidade(data["sensor_temperatura"][0]["gpio"], 1);
     
-    uint8_t* response = (uint8_t*)args;
-    float* dht;
+    uint8_t* estados = (uint8_t*)args;
+
     while (1)
     {
 
         delay(200);
-#ifndef DEV
-	    readDHT(main_gpio.sTempHumid->getGpioPin(), response);
-        printf("temp: %f, hum %f", response[12], response[13]);
-#endif 
-        main_gpio.refreshAll(response);
+	    // readDHT();
+        Gpio luz_1.r_state(&estados[0]);
+        Gpio luz_2.r_state(&estados[1]);
+        Gpio ar.r_state(&estados[2]);
+        Gpio projetor.r_state(&estados[3]);
+        Gpio alarme.r_state(&estados[4]);
+        Gpio s_presenca.r_state(&estados[5]);
+        Gpio s_fumaca.r_state(&estados[6]);
+        Gpio s_janela.r_state(&estados[7]);
+        Gpio s_porta.r_state(&estados[8]);
+        Gpio s_c_In.r_state(&estados[9]);
+        Gpio s_c_Out.r_state(&estados[10]);
     }
 }

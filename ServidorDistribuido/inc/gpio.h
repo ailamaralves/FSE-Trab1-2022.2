@@ -1,6 +1,5 @@
 #include <bcm2835.h>
 #include <fstream>
-#include <string>
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
@@ -11,49 +10,22 @@ using json = nlohmann::json;
 
 #define MAXTIMINGS 100
 
-class Pin 
+class Gpio 
 {
-private:
+public:
     uint8_t state;
-    std::string type;
-    std::string tag;
-public:
-    uint8_t isInput;
+    uint8_t entrad;
     uint8_t gpioPin;
-    Pin(json jgpio, uint8_t isIn);
-    void refreshState(uint8_t* stat);
-    void showState();
-    void changeState();
-    uint8_t getGpioPin();
-    uint8_t getState();
+    Gpio(int gpioo, uint8_t entrad);
+    void r_state(uint8_t* estados);
+    void c_state();
+    void d_all();
+    uint8_t get_gpio();
+    uint8_t get_state();
 
 };
-
-class Gpio
-{
-public:
-    Pin* light1;
-    Pin* light2;
-    Pin* air;
-    Pin* projector;
-    Pin* alarmBuzz;
-
-    Pin* sPresence;
-    Pin* sSmoke;
-    Pin* sWindow;
-    Pin* sDoor;
-    Pin* sCountIn;
-    Pin* sCountOut;
-
-    Pin* sTempHumid;
-    Gpio(json data);
-    void refreshAll(uint8_t* states);
-    void handle_smoke(uint8_t* states);
-};
-
-
 
 void *gpio_handler(void* args);
 
-float* readDHT(int pin, uint8_t* response);
+int readDHT(int type, int pin);
 
