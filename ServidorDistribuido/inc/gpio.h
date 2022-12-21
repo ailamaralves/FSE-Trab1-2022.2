@@ -14,7 +14,7 @@ class Gpio
 {
 public:
     uint8_t state;
-    uint8_t entrad;
+    uint8_t entrada;
     uint8_t gpioPin;
     Gpio(int gpioo, uint8_t entrad);
     void r_state(uint8_t* estados);
@@ -22,7 +22,7 @@ public:
     void d_all();
     uint8_t get_gpio();
     uint8_t get_state();
-
+    void tem_fumaca(uint8_t fumaca);
 };
 
 void *gpio_handler(void* args);

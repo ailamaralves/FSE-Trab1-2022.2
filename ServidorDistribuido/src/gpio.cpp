@@ -13,26 +13,21 @@ Gpio::Gpio(int gpioo, uint8_t entrad){
 }
 
 void Gpio::c_state(){
-    if(isInput) return;
+    if(entrada) return;
     state = !state;
     bcm2835_gpio_write(gpioPin, (uint8_t)state); 
 }
 
-void Gpio::r_state(uint8_t* entrada){
-    if(!isInput){
-        if(type == "alarme"){
-            if(stat[2]){
-                *stat = stat[2];
-            }
-        }
-        if(*stat != state){
+void Gpio::r_state(uint8_t* estados){
+    if(!entrada){
+        if(*estados != state){
             c_state();
         }
     }else{
         state = bcm2835_gpio_lev(gpioPin);
     } 
 
-    *stat = state;
+    *estados = state;
 }
 
 uint8_t Gpio::get_gpio(){
@@ -41,6 +36,12 @@ uint8_t Gpio::get_gpio(){
 
 uint8_t Gpio::get_state(){
     return state;
+}
+
+void Gpio::tem_fumaca(uint8_t fumaca){
+    if(fumaca){
+        state = 1;
+    }
 }
 
 void *gpio_handler(void* args){
@@ -68,16 +69,17 @@ void *gpio_handler(void* args){
 
         delay(200);
 	    // readDHT();
-        Gpio luz_1.r_state(&estados[0]);
-        Gpio luz_2.r_state(&estados[1]);
-        Gpio ar.r_state(&estados[2]);
-        Gpio projetor.r_state(&estados[3]);
-        Gpio alarme.r_state(&estados[4]);
-        Gpio s_presenca.r_state(&estados[5]);
-        Gpio s_fumaca.r_state(&estados[6]);
-        Gpio s_janela.r_state(&estados[7]);
-        Gpio s_porta.r_state(&estados[8]);
-        Gpio s_c_In.r_state(&estados[9]);
-        Gpio s_c_Out.r_state(&estados[10]);
+        alarme.tem_fumaca(estados[6]);
+        luz_1.r_state(&estados[0]);
+        luz_2.r_state(&estados[1]);
+        ar.r_state(&estados[2]);
+        projetor.r_state(&estados[3]);
+        alarme.r_state(&estados[4]);
+        s_presenca.r_state(&estados[5]);
+        s_fumaca.r_state(&estados[6]);
+        s_janela.r_state(&estados[7]);
+        s_porta.r_state(&estados[8]);
+        s_c_In.r_state(&estados[9]);
+        s_c_Out.r_state(&estados[10]);
     }
 }

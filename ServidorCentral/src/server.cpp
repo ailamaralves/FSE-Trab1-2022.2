@@ -1,4 +1,4 @@
-/* #include <server.h>
+#include <server.h>
 #include <unistd.h>
 
 void* criaServidor(void *arg){
@@ -61,4 +61,3 @@ void comunicacaoClienteTCP(int socketClient, uint8_t* varCompartilhada) {
 	}
 
 }
- */
