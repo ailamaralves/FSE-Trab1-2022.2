@@ -10,12 +10,12 @@ Suba o servidor central e logo depois o servidor distribuído.
 
 Subindo o central:
 
-        make clean
+        cd ServidorCentral
         make
         make run
 
-Subindo o servidor:
+Subindo o distribuido:
 
-        cd servidor
+        cd ServidorDistribuido
         make
         make run
