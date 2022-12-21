@@ -1,4 +1,5 @@
-#include <server.h>
+/* #include <server.h>
+#include <unistd.h>
 
 void* criaServidor(void *arg){
     int socketServidor, socketClient;
@@ -16,11 +17,11 @@ void* criaServidor(void *arg){
 	serverAddr.sin_addr.s_addr = htonl(INADDR_ANY);//qualquer endereço
 	serverAddr.sin_port = htons(SERVER_PORT);
 
-    //Bind
+    // Bind
     if (bind(socketServidor, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
         printf("erro binding\n");
     
-    //Listen
+    // Listen
     if (listen(socketServidor, 10) < 0)
         printf("listen error\n");
     
@@ -60,3 +61,4 @@ void comunicacaoClienteTCP(int socketClient, uint8_t* varCompartilhada) {
 	}
 
 }
+ */
