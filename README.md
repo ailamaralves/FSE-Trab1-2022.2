@@ -26,4 +26,4 @@ Subindo o servidor distribuido:
         $ make
         $ make run
 
-[Vídeo de demonstrção do projeto.](https://youtu.be/JCy7crpBh_U "FSE Trabalho 1")
+[Vídeo de demonstrção do projeto.](https://youtu.be/gcjjWaSl_Js "FSE Trabalho 1")
