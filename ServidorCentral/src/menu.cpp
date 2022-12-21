@@ -1,7 +1,6 @@
 #include <pthread.h>
 #include <server.h>
 #include <unistd.h>
-#include <bcm2835.h>
 #include <utility>
 #include <fstream>
 #include <string>
@@ -198,10 +197,10 @@ int main(int argc, char **argv)
     varCompartilhada = new uint8_t[14];
 
     int r = pthread_create(&menu_tid, NULL, menu, varCompartilhada);
-    int r2 = pthread_create(&server_tid, NULL, criaServidor, varCompartilhada);
+    /* int r2 = pthread_create(&server_tid, NULL, criaServidor, varCompartilhada); */
     if(!pthread_join(menu_tid, NULL))
         kill(r2, SIGKILL);
-    pthread_join(server_tid, NULL);
+    /* pthread_join(server_tid, NULL); */
 
     return 0;
 }
