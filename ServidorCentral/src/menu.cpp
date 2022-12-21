@@ -174,7 +174,7 @@ void* menu(void *arg){
     move(18, 0);
     WINDOW* commWin = newwin(3, 100, 18, 0);
     refresh();
-    mvwprintw(commWin, 1, 1, "Digite uma opção (de 1 a 5) caso queira alterar os estados.");
+    mvwprintw(commWin, 1, 1, "Digite uma opção (de 1 a 5) caso queira alterar os estados ou 0 para sair.");
     wrefresh(commWin);
     while(1){
         refresh();
